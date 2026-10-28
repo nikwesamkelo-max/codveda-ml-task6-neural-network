@@ -1,140 +1,219 @@
-# Neural Network with TensorFlow/Keras: Handwritten Digit Classification
+Neural Network with TensorFlow/Keras: Handwritten Digit Classification
 
-Codveda Technology Machine Learning Internship · Level 3, Task 3
+Codveda Technology — Machine Learning Internship | Task 6
 
-A reproducible pipeline that builds, trains and evaluates a feed-forward neural
-network that recognizes handwritten digits (0-9) from the MNIST dataset.
+A reproducible machine learning pipeline that builds, trains, and evaluates a feed-forward neural network to classify handwritten digits (0–9) using the MNIST dataset.
 
-## Dataset
+The model achieved 97.88% test accuracy on 10,000 previously unseen images.
 
-MNIST: 70,000 grayscale images of handwritten digits, 28 x 28 pixels each.
-Keras downloads it automatically on the first run.
+Project Overview
 
-| Set | Images | Used for |
-|---|---|---|
-| Train | 50,000 | Learning the weights |
-| Validation | 10,000 | Watching for overfitting during training |
-| Test | 10,000 | Final evaluation (untouched until step 4) |
+This project demonstrates a complete machine learning workflow, from dataset preparation and model construction to training, evaluation, and error analysis.
 
+Dataset
 
+MNIST contains 70,000 grayscale images of handwritten digits. Each image is 28 × 28 pixels.
 
-![Sample digits](images/sample_digits.png)
+Dataset| Images| Purpose
+Training| 50,000| Learning model weights
+Validation| 10,000| Monitoring generalization and overfitting
+Test| 10,000| Final evaluation on unseen data
+Total| 70,000| 
 
+The original 60,000-image MNIST training set was divided into 50,000 training images and 10,000 validation images. The original 10,000-image test set remained separate until final evaluation.
 
+Sample Images
 
-## Pipeline
+"MNIST handwritten digit samples" (images/sample_digits.png)
 
-| Step | Script | What it does |
-|------|--------|--------------|
-| 1 | `01_load_and_preprocess.py` | Loads MNIST, scales pixels to 0-1, makes a stratified validation split |
-| 2 | `02_build_model.py` | Designs and compiles the network, draws the architecture |
-| 3 | `03_train_model.py` | Trains with backpropagation and early stopping |
-| 4 | `04_evaluate_model.py` | Test accuracy, training/validation loss, confusion matrix |
+Machine Learning Pipeline
 
-## Architecture
+Step| Script| Description
+1| "01_load_and_preprocess.py"| Loads MNIST, scales pixel values to 0–1, and creates a stratified validation split
+2| "02_build_model.py"| Builds and compiles the neural network and generates an architecture diagram
+3| "03_train_model.py"| Trains the model using backpropagation and early stopping
+4| "04_evaluate_model.py"| Evaluates test performance and generates training curves, a confusion matrix, and misclassification visualizations
 
-| Layer | Details | Parameters |
-|---|---|---|
-| Input | 28 x 28 image | 0 |
-| Flatten | 784 values | 0 |
-| Hidden layer 1 | 128 neurons, ReLU | 100,480 |
-| Dropout | 20% of neurons switched off while training | 0 |
-| Hidden layer 2 | 64 neurons, ReLU | 8,256 |
-| Output layer | 10 neurons, softmax | 650 |
+Model Architecture
 
-Total: 109,386 trainable parameters.
+The network uses a flattened image representation followed by two fully connected hidden layers and a softmax output layer.
 
+Layer| Configuration| Parameters
+Input| 28 × 28 grayscale image| 0
+Flatten| Converts the image into 784 features| 0
+Dense| 128 neurons, ReLU activation| 100,480
+Dropout| 20% dropout rate| 0
+Dense| 64 neurons, ReLU activation| 8,256
+Output| 10 neurons, softmax activation| 650
+Total| 109,386 trainable parameters| 109,386
 
+Architecture Diagram
 
-![Architecture](images/architecture.png)
+"Neural network architecture" (images/architecture.png)
 
+Key Design Decisions
 
+- Pixel normalization: Converts pixel values from 0–255 to 0–1 to provide consistently scaled inputs.
+- Stratified validation split: Reserves 10,000 images for validation while preserving the distribution of digit classes.
+- ReLU activation: Introduces non-linearity into the hidden layers, allowing the network to learn more complex patterns.
+- Softmax output: Produces probabilities across the ten possible digit classes.
+- Dropout: Randomly disables 20% of the relevant hidden-layer activations during training to help reduce overfitting.
+- Adam optimizer: Updates model weights during training using gradient-based optimization.
+- Sparse categorical cross-entropy: Calculates classification loss directly from integer labels, without requiring one-hot encoding.
+- Early stopping: Stops training when validation loss fails to improve for three consecutive epochs and restores the best model weights.
+- Reproducibility: Uses a fixed random state of 42 for the stratified train-validation split.
 
-## Key decisions
+Training Configuration
 
-- **Pixel scaling.** Pixel values (0-255) are scaled to 0-1, because large
-  inputs make training erratic.
-- **Stratified validation split.** 10,000 training images are held out, with
-  every digit in equal proportion, to watch for overfitting.
-- **ReLU hidden layers, softmax output.** Softmax turns the 10 outputs into
-  probabilities that sum to 1; the highest one is the prediction.
-- **Dropout (20%)** reduces overfitting by stopping the network from relying on
-  any single neuron.
-- **Adam optimizer and sparse categorical cross-entropy.** Adam updates the
-  weights during backpropagation; "sparse" means labels are whole numbers 0-9,
-  so no one-hot encoding is needed.
-- **Early stopping.** Training stops when validation loss has not improved for
-  3 epochs, and the best weights are restored (maximum 20 epochs, batch size
-  128).
+Setting| Value
+Optimizer| Adam
+Loss function| Sparse categorical cross-entropy
+Batch size| 128
+Maximum epochs| 20
+Early stopping patience| 3 epochs
+Dropout rate| 20%
+Random state for data split| 42
 
-## Results
+Results
 
-| | Accuracy |
-|---|---|
-| Training (best epoch) | <<TRAIN_ACC>> |
-| Validation (best epoch) | <<VAL_ACC>> |
-| **Test (10,000 unseen images)** | **<<TEST_ACC>>** |
+The trained model correctly classified 9,788 of 10,000 test images, achieving 97.88% test accuracy.
 
-Test loss: <<TEST_LOSS>>. Training ran for <<EPOCHS_RUN>> epochs; the best
-epoch was <<BEST_EPOCH>>.
+Overall Performance
 
+Metric| Result
+Training accuracy at best epoch| 98.65%
+Validation accuracy at best epoch| 97.89%
+Test accuracy| 97.88%
+Test loss| 0.0800
+Best epoch| 13
+Total epochs completed| 16
+Correct test predictions| 9,788
+Incorrect test predictions| 212
+Trainable parameters| 109,386
 
+Training and Validation Curves
 
-![Training vs validation](images/training_curves.png)
+"Training and validation accuracy and loss" (images/training_curves.png)
 
+The model's training and validation accuracy generally increased while their losses decreased. Validation loss reached its minimum at epoch 13, at 0.0826. Training continued until epoch 16, when early stopping terminated the run and restored the best weights.
 
+The small difference between training accuracy (98.65%) and validation accuracy (97.89%) at the best epoch suggests that the model generalizes well, although some overfitting remains.
 
-<<ONE_SENTENCE_ON_WHAT_THE_CURVES_SHOW>>
+Error Analysis
 
-### Where it goes wrong
+Despite its high overall accuracy, the model occasionally confused visually similar handwritten digits.
 
-Most confused: <<MOST_CONFUSED_PAIR>>. The grid below shows the test images the
-network got wrong with the most confidence.
+Most Frequent Misclassifications
 
+Actual Digit| Predicted Digit| Errors
+5| 3| 17
+9| 4| 12
+7| 2| 9
 
+Accuracy by Digit
 
-![Misclassified digits](images/misclassified_digits.png)
+Digit| Accuracy
+0| 99.0%
+1| 98.9%
+2| 97.9%
+3| 98.4%
+4| 98.6%
+5| 96.1%
+6| 98.3%
+7| 97.8%
+8| 96.9%
+9| 96.7%
 
+Digit 5 had the lowest reported classification accuracy at 96.1%. Differences in handwriting styles may explain some errors, particularly when a digit resembles another class.
 
+Misclassified Examples
 
+The visualization below displays test images that the model classified incorrectly with high confidence.
 
+"Misclassified handwritten digits" (images/misclassified_digits.png)
 
-![Confusion matrix](images/confusion_matrix.png)
+Confusion Matrix
 
+The confusion matrix shows how frequently each actual digit was classified as each predicted digit, helping identify patterns in the model's errors.
 
+"Confusion matrix" (images/confusion_matrix.png)
 
-## Limitations
+Limitations and Future Improvements
 
-- A feed-forward network flattens each image, so it ignores how nearby pixels
-  relate. A convolutional neural network would typically do better on images.
-- Results come from a single training run with one random seed.
+Limitations
 
-## Setup and run
+- Limited spatial feature learning: Flattening each image loses the explicit spatial structure of neighboring pixels. A convolutional neural network (CNN) could learn local image features more effectively.
+- Single training run: The reported results come from one experiment. Additional runs with different random seeds would help establish performance consistency.
+- Ambiguous handwriting: Similar-looking digits remain a source of classification errors.
+- Limited dataset scope: MNIST contains small grayscale images of isolated digits, so performance may differ on real-world images with different backgrounds, image quality, or writing styles.
 
-```bash
+Potential Improvements
+
+- Build and evaluate a CNN architecture.
+- Compare alternative network architectures and dropout rates.
+- Examine high-confidence misclassifications to identify recurring patterns.
+- Repeat experiments with different random seeds.
+- Evaluate model performance using precision, recall, and F1-score alongside accuracy.
+
+Installation and Execution
+
+Requirements
+
+Python and the dependencies listed in "requirements.txt" are required.
+
+Install dependencies:
+
 pip install -r requirements.txt
+
+Run the complete pipeline:
+
 python run_all.py
-```
 
-TensorFlow is easiest to run in Google Colab, where it is preinstalled. The
-first run needs internet to download MNIST. Training takes a few minutes.
-Generated files go to `data/processed/` and `artifacts/` (not tracked in Git);
-metrics and the training history go to `outputs/`.
+The pipeline downloads MNIST if necessary, preprocesses the data, builds the model, trains it, and evaluates its performance.
 
-### Run in Google Colab
+Run in Google Colab
 
-```python
+Open "Google Colab" (https://colab.new), create a new notebook, and run the following commands in a code cell:
+
 !git clone https://github.com/nikwesamkelo-max/codveda-ml-task6-neural-network.git
 %cd codveda-ml-task6-neural-network
 !pip install -q -r requirements.txt
 !python run_all.py
-```
 
-## Tools
+If the repository is already cloned in the current Colab session, navigate to its existing directory instead of cloning it again.
 
-Python, TensorFlow/Keras, NumPy, pandas, scikit-learn, matplotlib, seaborn
+Note: The first run requires an internet connection to download the MNIST dataset. Training time depends on the available runtime.
 
-## Author
+Generated Outputs
 
-Samkelo · [GitHub](https://github.com/nikwesamkelo-max) ·
-[LinkedIn](https://linkedin.com/in/samkelo-nikwe-93226b344)
+The pipeline generates the following artifacts:
+
+Location| Contents
+"data/processed/"| Preprocessed MNIST dataset
+"artifacts/"| Saved model files
+"outputs/"| Metrics, model summary, and training history
+"images/"| Sample digits, architecture, training curves, confusion matrix, and misclassified examples
+
+Generated files may be excluded from Git using ".gitignore", depending on the repository configuration.
+
+Technologies Used
+
+- Python
+- TensorFlow / Keras
+- NumPy
+- scikit-learn
+- Matplotlib
+- Seaborn
+- Google Colab
+- Git and GitHub
+
+Author
+
+Samkelo
+
+- GitHub: "nikwesamkelo-max" (https://github.com/nikwesamkelo-max)
+- LinkedIn: "Samkelo on LinkedIn" (https://linkedin.com/in/samkelo-nikwe-93226b344)
+
+---
+
+Developed as part of the Codveda Technology Machine Learning Internship.
